@@ -300,9 +300,10 @@ export default async function HomePage() {
               <div className="visit__map">
                 <iframe
                   title={`Map showing ${clinic.name}`}
-                  src={`https://www.google.com/maps?q=${encodeURIComponent(clinic.mapsEmbedQuery)}&output=embed`}
+                  src={clinic.mapsEmbedUrl}
                   loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                  referrerPolicy="strict-origin-when-cross-origin"
                 />
               </div>
               <div className="visit__info">

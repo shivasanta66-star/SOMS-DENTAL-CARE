@@ -82,16 +82,46 @@ npm run build
 
 Without Razorpay keys the site still works: the booking form shows "Online payment is being set up, please call or WhatsApp", and nothing pretends to take a payment.
 
-## Deploying (Vercel + Supabase/Neon, region ap-south-1)
+## Deploying
 
-1. Create a Postgres database in **Mumbai (ap-south-1)** and copy its connection string, keeping `sslmode=require`.
-2. Import this repository into Vercel. `vercel.json` already pins functions to **bom1 (Mumbai)** so the API sits next to the database.
-3. Add the environment variables from `.env.example` in Vercel → Settings → Environment Variables.
-4. Run `npm run db:migrate` and `npm run admin:create` once against the production `DATABASE_URL`.
-5. In the Razorpay Dashboard:
-   - **Webhooks:** add `https://<your-domain>/api/razorpay/webhook` with the events `payment.captured`, `order.paid`, `payment.failed`, `refund.processed` and `refund.failed`, and use the same secret as `RAZORPAY_WEBHOOK_SECRET`.
-   - **Account & Settings → Payment capture:** set it to **automatic**, so payments don't sit in the authorised state and get auto-refunded.
-6. Test the whole flow with `rzp_test_...` keys first, then switch to `rzp_live_...` keys after KYC.
+The app runs on either **Vercel** or **Netlify**. Both need the same database, and the Razorpay setup and launch test afterwards are identical.
+
+### 1. Database (either host)
+
+Create a Postgres database in **Mumbai (ap-south-1)** on Neon, Supabase or Netlify DB (which is built on Neon). Copy its **pooled** connection string and keep `sslmode=require`. Serverless functions open many short-lived connections, which the pooler handles.
+
+### 2a. Hosting on Vercel
+
+1. Import this repository into Vercel. `vercel.json` already pins functions to **bom1 (Mumbai)** so the API sits next to the database.
+2. Add the environment variables from `.env.example` in Vercel → Settings → Environment Variables.
+
+### 2b. Hosting on Netlify
+
+1. In Netlify, choose **Add new site → Import an existing project → GitHub** and pick this repository. Netlify detects Next.js by itself and uses its Next.js runtime automatically. Keep the defaults: the build command is `npm run build`, and no `netlify.toml` is needed.
+2. Under **Site configuration → Environment variables**, add everything from `.env.example`: `DATABASE_URL`, `NEXT_PUBLIC_SITE_URL` (your Netlify URL or custom domain), `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` and `RAZORPAY_WEBHOOK_SECRET`.
+3. Under **Site configuration → Build & deploy → Functions → Functions region**, choose **Mumbai (ap-south-1)**, or the nearest region offered. Netlify ignores `vercel.json` and runs functions in the US by default. If your plan doesn't offer region selection, the site still works, but each booking request travels further and is slower.
+4. Under **Site configuration → Build & deploy → Environment**, make sure the Node.js version is 20 or later (set a `NODE_VERSION` environment variable of `22` if needed).
+5. Deploy, then open the **deploy preview** URL and run through a booking and an admin login before you point your domain at the site.
+
+### 3. First-time setup (either host)
+
+Run these once from your own computer against the production database:
+
+```bash
+DATABASE_URL='<production url>' npm run db:migrate
+DATABASE_URL='<production url>' ADMIN_USERNAME=reception ADMIN_PASSWORD='a long passphrase' npm run admin:create
+```
+
+### 4. Razorpay (either host)
+
+In the Razorpay Dashboard:
+
+- **Webhooks:** add `https://<your-domain>/api/razorpay/webhook` with the events `payment.captured`, `order.paid`, `payment.failed`, `refund.processed` and `refund.failed`, and use the same secret as `RAZORPAY_WEBHOOK_SECRET`. On Netlify before a custom domain is set, the domain is `<your-site>.netlify.app`. Update the webhook URL when you add a custom domain.
+- **Account & Settings → Payment capture:** set it to **automatic**, so payments don't sit in the authorised state and get auto-refunded.
+
+### 5. Launch test
+
+Test the whole flow with `rzp_test_...` keys first: book a slot, pay, see the confirmation, and check that the booking appears in `/admin`. Switch to `rzp_live_...` keys after KYC.
 
 ## Before launch: replace the DUMMY values
 

@@ -1,7 +1,6 @@
 import { BookingWidget } from "@/components/booking/BookingWidget";
 import {
   BracesIcon,
-  CameraIcon,
   CheckupIcon,
   ClockIcon,
   CrownIcon,
@@ -20,6 +19,7 @@ import {
   WhatsAppIcon,
 } from "@/components/icons";
 import { BookThisButton } from "@/components/site/BookThisButton";
+import { ClinicIllustration } from "@/components/site/Illustrations";
 import { PersistentActions } from "@/components/site/PersistentActions";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { clinic, weekdayNames, whatsappLink } from "@/lib/clinic";
@@ -153,11 +153,7 @@ export default async function HomePage() {
         <section id="doctor" className="section" aria-labelledby="doctor-title">
           <div className="container grid">
             <div className="doctor__photo reveal" suppressHydrationWarning>
-              <div className="photo-ph photo-ph--portrait" role="img" aria-label={`${clinic.doctor.shortName} at ${clinic.name}`}>
-                <CameraIcon size={32} />
-                <strong>Photo: {clinic.doctor.shortName}</strong>
-                <span>Portrait of the doctor in the clinic (to be supplied)</span>
-              </div>
+              <ClinicIllustration kind="doctor" portrait label={`Illustration of ${clinic.doctor.shortName} at ${clinic.name}. A real photo will replace it.`} />
             </div>
             <div className="doctor__body reveal" suppressHydrationWarning>
               <span className="eyebrow">Meet your doctor</span>
@@ -214,11 +210,7 @@ export default async function HomePage() {
               {facilityPhotos.map((p) => (
                 <li key={p.title} className="reveal" suppressHydrationWarning>
                   <figure style={{ margin: 0 }}>
-                    <div className="photo-ph" role="img" aria-label={`${p.title} at ${clinic.name}`}>
-                      <CameraIcon size={28} />
-                      <strong>{p.title}</strong>
-                      <span>{p.detail}</span>
-                    </div>
+                    <ClinicIllustration kind={p.illustration} label={`Illustration: ${p.detail} at ${clinic.name}. A real photo will replace it.`} />
                     <figcaption>{p.title}</figcaption>
                   </figure>
                 </li>

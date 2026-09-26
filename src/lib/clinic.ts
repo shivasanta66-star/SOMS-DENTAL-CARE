@@ -21,10 +21,12 @@ export const clinic = {
   instagramUrl: "https://instagram.com/somsdentalcare",
   instagramHandle: "@somsdentalcare",
   mapsUrl: "https://maps.app.goo.gl/mcUPukq2ub2TsLaR6",
-  mapsEmbedQuery: "SOMS Dental Care, Jharigaon - Dhamnaguda Rd, Umerkote, Odisha 764073",
-  // Exact clinic coordinates are not confirmed yet. Add { latitude, longitude }
-  // here and they will be included in the JSON-LD schema automatically.
-  geo: null as { latitude: number; longitude: number } | null,
+  // The clinic's own Google Maps embed (Google Maps > Share > Embed a map).
+  mapsEmbedUrl:
+    "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3574.1303099460406!2d82.36454897498959!3d19.533844381767274!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a2ff7f102b45ecf%3A0xcdb0121693d9bec5!2sSOMS%20DENTAL%20CARE!5e1!3m2!1sen!2sin!4v1790421216757!5m2!1sen!2sin",
+  // Centre of the embed above, which Google centres on the clinic's listing.
+  // Used in the JSON-LD schema; set to null to leave it out.
+  geo: { latitude: 19.533844, longitude: 82.364549 } as { latitude: number; longitude: number } | null,
   doctor: {
     // DUMMY - confirm full name and qualification.
     name: "Dr. Soumya Ranjan Sahu",

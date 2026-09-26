@@ -137,7 +137,7 @@ Other copy to check with the clinic:
 
 - [ ] **Parking**, in the FAQ in `src/lib/content.ts`. It is a clearly marked `[placeholder]`.
 - [ ] The **hygiene line** in the facility section, which says instruments are sterilised after every patient and single-use items are fresh for each person.
-- [ ] The **clinic's exact coordinates**. Add them to `geo` in `clinic.ts` so they are included in the JSON-LD.
+- [ ] The **map pin**: the embedded map and the JSON-LD coordinates come from the clinic's Google Maps listing (`mapsEmbedUrl` and `geo` in `clinic.ts`). Check the pin is on the right building.
 
 Other launch tasks:
 
@@ -145,7 +145,7 @@ Other launch tasks:
 - [ ] Complete Razorpay KYC and test in sandbox mode before switching to live keys.
 - [ ] Decide who holds the admin login day to day, and set a real password (`npm run admin:create` resets it).
 
-The Google Maps link and the 4.5★ / 12 reviews rating are real and verified. Keep the rating as it is until the real count changes.
+The Google Maps link, the embedded map and the 4.5★ / 12 reviews rating are real and verified. Keep the rating as it is until the real count changes.
 
 ## Out of scope for v1 (flagged, not built)
 

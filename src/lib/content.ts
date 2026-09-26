@@ -21,11 +21,11 @@ export const trustPoints = [
 ] as const;
 
 export const facilityPhotos = [
-  { title: "Treatment chair", detail: "Photo of the dental chair and overhead light" },
-  { title: "Sterilisation area", detail: "Photo of the autoclave and instrument trays" },
-  { title: "Dental X-ray", detail: "Photo of the X-ray equipment" },
-  { title: "Waiting area", detail: "Photo of the reception and waiting seats" },
-];
+  { title: "Treatment chair", detail: "The dental chair and overhead light", illustration: "chair" },
+  { title: "Sterilisation area", detail: "The autoclave and sealed instrument pouches", illustration: "sterilisation" },
+  { title: "Dental X-ray", detail: "The X-ray unit and viewer", illustration: "xray" },
+  { title: "Waiting area", detail: "Reception and waiting seats", illustration: "waiting" },
+] as const;
 
 // Summaries of what patients mention most in the clinic's Google reviews.
 // Not quotes, and not attributed to anyone.

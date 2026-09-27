@@ -3,7 +3,7 @@
 /*
  * Booking widget (data-integration="booking-api").
  *
- * Everything here is driven by the backend in src/app/api:
+ * Everything here is driven by the Netlify Functions in netlify/functions:
  *   GET  /api/booking/config        active services, consultation fee, Razorpay key
  *   GET  /api/availability          open 30-minute slots for the next 14 days
  *   POST /api/appointments          holds the slot and creates a Razorpay order

@@ -1,6 +1,6 @@
 import { createHmac } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { isValidPaymentSignature, isValidWebhookSignature } from "@/lib/razorpay-signature";
+import { isValidPaymentSignature, isValidWebhookSignature } from "../netlify/lib/razorpay-signature";
 
 const secret = "test_secret";
 

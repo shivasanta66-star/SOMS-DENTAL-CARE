@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import type { Appointment } from "@/lib/appointments";
+import type { Appointment } from "@/lib/appointment-types";
 import { formatDateShort, formatRupees, formatTime12, hhmm } from "@/lib/time";
 
 const statusLabels: Record<string, string> = {
@@ -29,7 +31,7 @@ const messages: Record<string, string> = {
   refunded: "Refund started in Razorpay. It usually reaches the patient in 5-7 working days.",
   added: "Service added.",
   saved: "Saved.",
-  hours: "Weekly hours saved. The website updates within 5 minutes.",
+  hours: "Weekly hours saved. The website shows them straight away.",
   blocked: "Time blocked. Patients can no longer book it.",
   unblocked: "Block removed.",
   fee: "Consultation fee saved. New bookings will use it.",
@@ -47,15 +49,28 @@ const messages: Record<string, string> = {
   pw_short: "The new password must be at least 12 characters.",
   pw_match: "The two new passwords don't match.",
   pw_current: "The current password is incorrect.",
+  network: "Couldn't reach the server. Check the internet connection and try again.",
+  server: "Something went wrong on the server. Please try again.",
+  forbidden: "That request was blocked. Reload the page and try again.",
+  bad_request: "That request wasn't valid. Reload the page and try again.",
 };
 
-export function Flash({ ok, error }: { ok?: string; error?: string }) {
+const errorOverrides: Record<string, string> = {
+  hours: "Each open day needs an opening time at least 30 minutes before closing.",
+  fee: "Enter a fee between ₹1 and ₹1,00,000.",
+};
+
+export function Flash({ ok, error }: { ok?: string; error?: string | null }) {
   if (error) {
-    const text = error === "hours" ? "Each open day needs an opening time at least 30 minutes before closing." : error === "fee" ? "Enter a fee between ₹1 and ₹1,00,000." : messages[error];
-    return text ? <div className="notice notice--error" role="alert"><p>{text}</p></div> : null;
+    const text = errorOverrides[error] ?? messages[error] ?? messages.server;
+    return <div className="notice notice--error" role="alert"><p>{text}</p></div>;
   }
   if (ok && messages[ok]) return <div className="notice" role="status"><p>{messages[ok]}</p></div>;
   return null;
+}
+
+export function Loading() {
+  return <p className="caption" role="status">Loading…</p>;
 }
 
 export function AppointmentTable({ rows, empty }: { rows: Appointment[]; empty: string }) {
@@ -78,7 +93,7 @@ export function AppointmentTable({ rows, empty }: { rows: Appointment[]; empty: 
           <tr key={a.id}>
             <td>{formatDateShort(a.appointment_date)}</td>
             <td>{formatTime12(hhmm(a.time_slot))}</td>
-            <td><Link href={`/admin/appointments/${a.id}`}>{a.patient_name}</Link></td>
+            <td><Link href={`/admin/appointments/view?id=${a.id}`}>{a.patient_name}</Link></td>
             <td><a href={`tel:+91${a.patient_phone}`}>{a.patient_phone}</a></td>
             <td className="wrap">{a.service}</td>
             <td><Badge value={a.status} /></td>

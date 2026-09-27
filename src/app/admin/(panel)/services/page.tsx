@@ -1,20 +1,32 @@
-import { requireAdmin } from "@/lib/auth";
-import { query } from "@/lib/db";
-import { addServiceAction, moveServiceAction, renameServiceAction, toggleServiceAction } from "../../actions";
-import { Badge, Flash } from "../../ui";
+"use client";
 
-export default async function ServicesPage({ searchParams }: { searchParams: Promise<{ ok?: string; error?: string }> }) {
-  await requireAdmin();
-  const sp = await searchParams;
-  const { rows } = await query<{ id: number; name: string; is_active: boolean }>(
-    "SELECT id, name, is_active FROM services ORDER BY display_order, id",
-  );
+import { useState } from "react";
+import { formValues, submitChange, useAdminData, type FlashState } from "../../api";
+import { Badge, Flash, Loading } from "../../ui";
+
+type Service = { id: number; name: string; is_active: boolean };
+
+export default function ServicesPage() {
+  const { data, error, reload } = useAdminData<{ services: Service[] }>("services");
+  const [flash, setFlash] = useState<FlashState>({});
+  const [busy, setBusy] = useState(false);
+
+  async function change(path: string, body: unknown) {
+    setBusy(true);
+    const ok = await submitChange(path, body, setFlash, reload);
+    setBusy(false);
+    return ok;
+  }
+
+  if (error) return <Flash error={error} />;
+  if (!data) return <Loading />;
+  const rows = data.services;
 
   return (
     <>
       <h1>Services</h1>
       <p className="caption">These appear in the booking form, in this order. Hidden services can't be booked online.</p>
-      <Flash ok={sp.ok} error={sp.error} />
+      <Flash ok={flash.ok === "moved" ? undefined : flash.ok} error={flash.error} />
       <div className="admin-card">
         <table className="table">
           <thead>
@@ -25,32 +37,29 @@ export default async function ServicesPage({ searchParams }: { searchParams: Pro
               <tr key={s.id}>
                 <td>
                   <div className="actions">
-                    <form action={moveServiceAction} className="inline-form">
-                      <input type="hidden" name="id" value={s.id} />
-                      <input type="hidden" name="dir" value="up" />
-                      <button className="btn btn--outline btn--small" disabled={i === 0} aria-label={`Move ${s.name} up`}>↑</button>
-                    </form>
-                    <form action={moveServiceAction} className="inline-form">
-                      <input type="hidden" name="id" value={s.id} />
-                      <input type="hidden" name="dir" value="down" />
-                      <button className="btn btn--outline btn--small" disabled={i === rows.length - 1} aria-label={`Move ${s.name} down`}>↓</button>
-                    </form>
+                    <button className="btn btn--outline btn--small" disabled={busy || i === 0} aria-label={`Move ${s.name} up`} onClick={() => change(`services/${s.id}/move`, { dir: "up" })}>↑</button>
+                    <button className="btn btn--outline btn--small" disabled={busy || i === rows.length - 1} aria-label={`Move ${s.name} down`} onClick={() => change(`services/${s.id}/move`, { dir: "down" })}>↓</button>
                   </div>
                 </td>
                 <td>
-                  <form action={renameServiceAction} className="inline-form">
-                    <input type="hidden" name="id" value={s.id} />
+                  <form
+                    className="inline-form"
+                    key={s.name}
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      void change(`services/${s.id}`, { name: formValues(e.currentTarget).name });
+                    }}
+                  >
                     <label className="sr-only" htmlFor={`svc-${s.id}`}>Service name</label>
                     <input id={`svc-${s.id}`} name="name" className="input" defaultValue={s.name} style={{ minWidth: 280 }} required minLength={2} maxLength={100} />
-                    <button className="btn btn--outline btn--small">Save</button>
+                    <button className="btn btn--outline btn--small" disabled={busy}>Save</button>
                   </form>
                 </td>
                 <td><Badge value={s.is_active ? "confirmed" : "cancelled"} /> {s.is_active ? "Shown" : "Hidden"}</td>
                 <td>
-                  <form action={toggleServiceAction} className="inline-form">
-                    <input type="hidden" name="id" value={s.id} />
-                    <button className="btn btn--outline btn--small">{s.is_active ? "Hide" : "Show"}</button>
-                  </form>
+                  <button className="btn btn--outline btn--small" disabled={busy} onClick={() => change(`services/${s.id}`, { toggle: true })}>
+                    {s.is_active ? "Hide" : "Show"}
+                  </button>
                 </td>
               </tr>
             ))}
@@ -64,10 +73,17 @@ export default async function ServicesPage({ searchParams }: { searchParams: Pro
 
       <div className="admin-card">
         <h2 style={{ marginTop: 0 }}>Add a service</h2>
-        <form action={addServiceAction} className="inline-form">
+        <form
+          className="inline-form"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const form = e.currentTarget;
+            if (await change("services", { name: formValues(form).name })) form.reset();
+          }}
+        >
           <label className="sr-only" htmlFor="new-service">New service name</label>
           <input id="new-service" name="name" className="input" placeholder="e.g. Teeth Whitening" required minLength={2} maxLength={100} style={{ minWidth: 280 }} />
-          <button className="btn btn--primary btn--small">Add service</button>
+          <button className="btn btn--primary btn--small" disabled={busy}>Add service</button>
         </form>
       </div>
     </>

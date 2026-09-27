@@ -1,6 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { hasAdminAccount } from "../lib/auth";
-import { isDatabaseConfigured, isMissingSchema } from "../lib/db";
+import { describeError, describeSupabaseConfig, isDatabaseConfigured, isMissingSchema } from "../lib/db";
 import { json } from "../lib/http";
 import { isWebhookConfigured, razorpayMode } from "../lib/razorpay";
 
@@ -17,7 +17,12 @@ export default async () => {
       database = "ok";
     } catch (err) {
       database = isMissingSchema(err) ? "schema_missing" : "error";
-      if (database === "error") console.error("health: database check failed", err);
+      // Log everything (the error's own fields, HTTP status, nested cause and the
+      // non-secret Supabase settings) so Netlify's function log shows the real reason.
+      console.error(
+        `health: database check failed (${database})`,
+        JSON.stringify({ error: describeError(err), config: describeSupabaseConfig() }, null, 2),
+      );
     }
   }
   const razorpay = razorpayMode();

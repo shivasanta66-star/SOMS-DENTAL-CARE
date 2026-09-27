@@ -52,3 +52,47 @@ export function isMissingSchema(err: unknown) {
   const code = typeof err === "object" && err !== null ? (err as { code?: string }).code : undefined;
   return code === "42P01" || code === "42883" || code === "PGRST202" || code === "PGRST205";
 }
+
+/**
+ * Every property of an error, for logs: message, stack, code, details, hint,
+ * HTTP status and any nested cause. console.error on a PostgrestError can
+ * print little more than `{ message: '' }`.
+ */
+export function describeError(err: unknown): Record<string, unknown> {
+  if (err === null || typeof err !== "object") return { value: err };
+  const out: Record<string, unknown> = {};
+  for (const key of Object.getOwnPropertyNames(err)) out[key] = (err as Record<string, unknown>)[key];
+  if (err instanceof Error) {
+    out.name = err.name;
+    if (err.cause !== undefined) out.cause = describeError(err.cause);
+  }
+  return out;
+}
+
+/**
+ * Non-secret facts about the Supabase settings, for diagnosing a failed
+ * connection: the URL (not secret) and which kind of key is set, never the key.
+ */
+export function describeSupabaseConfig() {
+  const url = process.env.SUPABASE_URL ?? "";
+  const key = process.env.SUPABASE_SECRET_KEY ?? "";
+  let keyType = "missing";
+  if (key.startsWith("sb_secret_")) keyType = "sb_secret (correct)";
+  else if (key.startsWith("sb_publishable_")) keyType = "sb_publishable (wrong key: use the secret key)";
+  else if (key.split(".").length === 3) {
+    let role = "unknown";
+    try {
+      role = String(JSON.parse(Buffer.from(key.split(".")[1], "base64url").toString("utf8")).role ?? "unknown");
+    } catch {}
+    keyType = `legacy JWT, role=${role}${role === "service_role" ? " (correct)" : " (wrong key: use service_role)"}`;
+  } else if (key) keyType = "unrecognised format";
+  let supabaseUrl = url || "missing";
+  try {
+    const u = new URL(url);
+    supabaseUrl = `${u.origin}${u.pathname === "/" ? "" : `${u.pathname} (should be just the project URL, no path)`}`;
+  } catch {
+    if (url) supabaseUrl = "not a valid URL";
+  }
+  return { supabaseUrl, keyType };
+}
+

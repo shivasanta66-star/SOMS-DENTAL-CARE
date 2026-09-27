@@ -66,7 +66,9 @@ export async function changePassword(req: Request, adminId: number, currentPassw
 }
 
 export async function hasAdminAccount() {
-  const { count, error } = await db().from("admin_users").select("id", { count: "exact", head: true });
-  if (error) throw error;
-  return (count ?? 0) > 0;
+  // A plain GET rather than a HEAD count: a HEAD response has no body, so an
+  // error would arrive with an empty message and no code.
+  const { data, error, status, statusText } = await db().from("admin_users").select("id").limit(1);
+  if (error) throw Object.assign(error, { httpStatus: status, httpStatusText: statusText });
+  return (data ?? []).length > 0;
 }

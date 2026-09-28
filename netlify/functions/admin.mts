@@ -7,7 +7,13 @@ import { db, isUniqueViolation, must, mustCount } from "../lib/db";
 import { clientIp, isSameOrigin, json, jsonError, readJsonBody } from "../lib/http";
 import { isWebhookConfigured, razorpayMode, refundPayment } from "../lib/razorpay";
 import { rateLimit } from "../lib/rate-limit";
-import { getConsultationFeePaise, setConsultationFeePaise } from "../lib/settings";
+import {
+  getBookingWindowDays,
+  getConsultationFeePaise,
+  isValidBookingWindowDays,
+  setBookingWindowDays,
+  setConsultationFeePaise,
+} from "../lib/settings";
 
 /*
  * Admin API, all behind the session cookie set by POST /api/admin/login.
@@ -281,14 +287,23 @@ const deleteBlock: Handler = async ({ body }) => {
 
 // ---------- Settings ----------
 
-const getSettings: Handler = async () =>
-  json({ feePaise: await getConsultationFeePaise(), razorpay: razorpayMode(), webhook: isWebhookConfigured() });
+const getSettings: Handler = async () => {
+  const [feePaise, bookingWindowDays] = await Promise.all([getConsultationFeePaise(), getBookingWindowDays()]);
+  return json({ feePaise, bookingWindowDays, razorpay: razorpayMode(), webhook: isWebhookConfigured() });
+};
 
 const saveFee: Handler = async ({ body }) => {
   const rupees = Number(body.rupees);
   if (!Number.isFinite(rupees) || rupees < 1 || rupees > 100000) return fail(400, "fee");
   await setConsultationFeePaise(Math.round(rupees * 100));
   return ok("fee");
+};
+
+const saveBookingWindow: Handler = async ({ body }) => {
+  const days = Number(body.days);
+  if (!isValidBookingWindowDays(days)) return fail(400, "window");
+  await setBookingWindowDays(days);
+  return ok("window");
 };
 
 const savePassword: Handler = async ({ req, admin, body }) => {
@@ -320,6 +335,7 @@ const routes: [string, RegExp, Handler][] = [
   ["POST", /^blocks\/delete$/, deleteBlock],
   ["GET", /^settings$/, getSettings],
   ["POST", /^settings\/fee$/, saveFee],
+  ["POST", /^settings\/booking-window$/, saveBookingWindow],
   ["POST", /^password$/, savePassword],
 ];
 

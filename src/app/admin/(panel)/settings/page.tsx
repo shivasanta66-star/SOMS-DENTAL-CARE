@@ -4,7 +4,7 @@ import { useState } from "react";
 import { formValues, submitChange, useAdminData, type FlashState } from "../../api";
 import { Flash, Loading } from "../../ui";
 
-type Settings = { feePaise: number; razorpay: "live" | "test" | "not_configured"; webhook: boolean };
+type Settings = { feePaise: number; bookingWindowDays: number; razorpay: "live" | "test" | "not_configured"; webhook: boolean };
 
 const modes = { live: "Live", test: "Test mode (no real money)", not_configured: "Not configured" };
 
@@ -44,6 +44,27 @@ export default function SettingsPage() {
             <input name="fee" type="number" min={1} max={100000} step="0.01" className="input" defaultValue={data.feePaise / 100} required />
           </label>
           <button type="submit" className="btn btn--primary btn--small" disabled={busy}>Save fee</button>
+        </form>
+      </section>
+
+      <section className="admin-card" aria-labelledby="window-title">
+        <h2 id="window-title" style={{ marginTop: 0 }}>Booking window</h2>
+        <p className="caption">
+          How many days ahead patients can book online, counting today. Bookings already made further out are kept.
+        </p>
+        <form
+          className="filters"
+          key={data.bookingWindowDays}
+          onSubmit={(e) => {
+            e.preventDefault();
+            void change("settings/booking-window", { days: Number(formValues(e.currentTarget).days) });
+          }}
+        >
+          <label>
+            Days ahead
+            <input name="days" type="number" min={1} max={90} step={1} className="input" defaultValue={data.bookingWindowDays} required />
+          </label>
+          <button type="submit" className="btn btn--primary btn--small" disabled={busy}>Save booking window</button>
         </form>
       </section>
 

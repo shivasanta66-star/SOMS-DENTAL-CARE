@@ -290,5 +290,10 @@ ON CONFLICT (weekday) DO NOTHING;
 INSERT INTO public.settings (key, value) VALUES ('consultation_fee_paise', '20000')
 ON CONFLICT (key) DO NOTHING;
 
+-- How many days ahead patients can book (1-90). Editable in Admin > Settings.
+-- Without this row the functions use 30, so re-running this file is optional.
+INSERT INTO public.settings (key, value) VALUES ('booking_window_days', '30')
+ON CONFLICT (key) DO NOTHING;
+
 -- Make the REST API see the new tables and functions straight away.
 NOTIFY pgrst, 'reload schema';

@@ -35,6 +35,7 @@ const messages: Record<string, string> = {
   blocked: "Time blocked. Patients can no longer book it.",
   unblocked: "Block removed.",
   fee: "Consultation fee saved. New bookings will use it.",
+  window: "Booking window saved. The website's date list updates straight away.",
   pw: "Password changed. Other devices have been signed out.",
   // errors
   bad_status: "That status change isn't allowed.",
@@ -58,6 +59,7 @@ const messages: Record<string, string> = {
 const errorOverrides: Record<string, string> = {
   hours: "Each open day needs an opening time at least 30 minutes before closing.",
   fee: "Enter a fee between ₹1 and ₹1,00,000.",
+  window: "Enter a whole number of days between 1 and 90.",
 };
 
 export function Flash({ ok, error }: { ok?: string; error?: string | null }) {

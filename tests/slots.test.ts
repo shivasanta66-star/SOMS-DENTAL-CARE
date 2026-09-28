@@ -51,8 +51,17 @@ describe("availableSlotsForDate", () => {
     expect(availableSlotsForDate("2026-09-26", allWeek, [], [], now)).toEqual([]);
   });
 
-  it("refuses dates outside the 14-day window", () => {
-    expect(availableSlotsForDate("2026-10-10", allWeek, [], [], saturdayMorning)).toEqual([]);
-    expect(availableSlotsForDate("2026-10-09", allWeek, [], [], saturdayMorning)).toHaveLength(20);
+  it("refuses dates outside the default 30-day window", () => {
+    // 26 Sep is day 1, so 25 Oct is day 30.
+    expect(bookingWindow(saturdayMorning)).toHaveLength(30);
+    expect(bookingWindow(saturdayMorning).at(-1)).toBe("2026-10-25");
+    expect(availableSlotsForDate("2026-10-26", allWeek, [], [], saturdayMorning)).toEqual([]);
+    expect(availableSlotsForDate("2026-10-25", allWeek, [], [], saturdayMorning)).toHaveLength(20);
+  });
+
+  it("uses a custom window length when given one", () => {
+    expect(bookingWindow(saturdayMorning, 14)).toHaveLength(14);
+    expect(availableSlotsForDate("2026-10-10", allWeek, [], [], saturdayMorning, 14)).toEqual([]);
+    expect(availableSlotsForDate("2026-10-09", allWeek, [], [], saturdayMorning, 14)).toHaveLength(20);
   });
 });

@@ -3,7 +3,7 @@ import { getAvailability } from "../lib/appointments";
 import { clientIp, json, jsonError } from "../lib/http";
 import { rateLimit } from "../lib/rate-limit";
 
-/** Open 30-minute slots for each of the next 14 days (IST). */
+/** Open 30-minute slots for each day in the booking window (IST). */
 export default async (req: Request, context: Context) => {
   if (req.method !== "GET") return jsonError(405, "Method not allowed");
   try {

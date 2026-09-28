@@ -1,6 +1,7 @@
 import { availableSlotsForDate, bookingWindow, type BlockedRow, type BookedRow, type HoursRow } from "../../src/lib/slots";
 import { db, must } from "./db";
 import { fetchOrderPayments, isRazorpayConfigured } from "./razorpay";
+import { getBookingWindowDays } from "./settings";
 import type { Appointment } from "../../src/lib/appointment-types";
 
 export type { Appointment };
@@ -16,10 +17,10 @@ export async function expireStalePendingAppointments() {
   return must(await db().rpc("expire_stale_appointments", { p_hold_minutes: PENDING_PAYMENT_HOLD_MINUTES })) as number;
 }
 
-/** Open slots for each of the next 14 days (IST). */
+/** Open slots for each day in the booking window (IST), 30 days unless changed in Admin → Settings. */
 export async function getAvailability(now: Date = new Date()) {
-  await expireStalePendingAppointments();
-  const days = bookingWindow(now);
+  const [, windowDays] = await Promise.all([expireStalePendingAppointments(), getBookingWindowDays()]);
+  const days = bookingWindow(now, windowDays);
   const from = days[0];
   const to = days[days.length - 1];
 
@@ -34,7 +35,7 @@ export async function getAvailability(now: Date = new Date()) {
 
   return days.map((date) => ({
     date,
-    slots: availableSlotsForDate(date, hoursRows, blockedRows, bookedRows, now),
+    slots: availableSlotsForDate(date, hoursRows, blockedRows, bookedRows, now, windowDays),
   }));
 }
 

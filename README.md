@@ -22,7 +22,7 @@ The page also has a sticky header whose "Book Appointment" button appears once y
 
 **Booking and payment flow**
 
-1. The patient picks a service and then one of the next 14 days. Open 30-minute slots are derived from the clinic hours, minus slots already booked and slots the admin has blocked. All dates and times are in IST.
+1. The patient picks a service and then one of the next 30 days (the booking window, which can be changed in **Admin → Settings**). Open 30-minute slots are derived from the clinic hours, minus slots already booked and slots the admin has blocked. All dates and times are in IST.
 2. The patient enters a name and a 10-digit Indian mobile number and sees the consultation fee.
 3. **Proceed to Payment** holds the slot (`pending_payment`), creates a Razorpay order and opens Razorpay Checkout (UPI, cards, netbanking).
 4. The server verifies the Razorpay signature, never the browser, and the appointment becomes `confirmed` / `paid`. The patient sees a confirmation with **Save to Google Calendar** and a **.ics** download.
@@ -44,7 +44,7 @@ Edge cases that are handled:
 - **Appointment detail:** the Razorpay order, payment and refund IDs, with Mark completed and Mark no-show buttons. **Cancelling a paid booking asks** whether to refund in full through Razorpay or keep the payment on record to refund later. A payment record is never lost silently.
 - **Services:** add, rename, show or hide, and reorder.
 - **Availability:** weekly hours, and blocks for whole days or time ranges (holidays, leave). The page warns if bookings already exist inside a block.
-- **Settings:** the flat consultation fee, the Razorpay status, and a password change.
+- **Settings:** the flat consultation fee, how many days ahead patients can book (1-90, default 30), the Razorpay status, and a password change.
 
 **Security and data handling**
 
@@ -69,7 +69,7 @@ Edge cases that are handled:
 | Endpoint | Function | Purpose |
 | --- | --- | --- |
 | `GET /api/booking/config` | `booking-config` | Active services, consultation fee, Razorpay key ID |
-| `GET /api/availability` | `availability` | Open 30-minute slots for the next 14 days |
+| `GET /api/availability` | `availability` | Open 30-minute slots for each day in the booking window (30 days by default) |
 | `POST /api/appointments` | `appointments-create` | Holds the slot (`pending_payment`) and creates the Razorpay order |
 | `POST /api/appointments/verify` | `appointments-verify` | Verifies the Razorpay signature server-side and confirms the booking |
 | `POST /api/razorpay/webhook` | `razorpay-webhook` | Optional backup confirmation and refund status (needs `RAZORPAY_WEBHOOK_SECRET`) |

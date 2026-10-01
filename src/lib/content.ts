@@ -14,10 +14,10 @@ export const services: { name: string; description: string; icon: ServiceIconKey
 ];
 
 export const trustPoints = [
-  { title: "Painless & Gentle Treatment", text: "We numb the area properly and go at your pace.", icon: "heart" },
-  { title: "Advanced Facility & Equipment", text: "Modern equipment and strict sterilisation for every patient.", icon: "shield" },
-  { title: "Transparent Pricing", text: "No hidden charges. You'll know the cost before we begin.", icon: "rupee" },
-  { title: "Experienced, Friendly Care", text: "A doctor who listens, explains, and answers every question.", icon: "user" },
+  { title: "Numbed before we begin", text: "Local anaesthetic first, and we stop the moment you ask." },
+  { title: "Sterilised between patients", text: "Instruments are autoclaved; gloves and masks are single-use." },
+  { title: "Cost before treatment", text: "You hear the price of each option before you agree to one." },
+  { title: "Explained in plain words", text: "What is wrong, what it needs, and what happens if you wait." },
 ] as const;
 
 export const facilityPhotos = [
@@ -30,10 +30,10 @@ export const facilityPhotos = [
 // Summaries of what patients mention most in the clinic's Google reviews.
 // Not quotes, and not attributed to anyone.
 export const reviewHighlights = [
-  { title: "Painless treatment", text: "Patients often say their treatment was far gentler than they expected, even for procedures they were worried about." },
-  { title: "Advanced facility", text: "The clean, well-equipped clinic comes up again and again, with modern equipment many didn't expect to find locally." },
-  { title: "Affordable cost", text: "Reviewers mention fair, affordable charges, and knowing the cost clearly before treatment began." },
-  { title: "Friendly staff", text: "People describe a warm welcome and a doctor who takes time to explain things and put nervous patients at ease." },
+  { title: "Gentler than expected", text: "Patients say even the treatments they dreaded were far more comfortable than they feared." },
+  { title: "Better equipped than expected", text: "The clean, modern clinic comes up again and again, with equipment many did not expect to find locally." },
+  { title: "Fair, clear charges", text: "Reviewers mention affordable fees and knowing the cost before treatment began." },
+  { title: "Time taken to explain", text: "A warm welcome, and a doctor who puts nervous patients at ease." },
 ];
 
 export const faqs: { q: string; a: string[] }[] = [
@@ -65,9 +65,9 @@ export const faqs: { q: string; a: string[] }[] = [
     ],
   },
   {
-    q: "Is there parking?",
+    q: "How do I find the clinic?",
     a: [
-      "[Parking details to be confirmed by the clinic.] For directions, use the map below or call us and we'll guide you.",
+      `We are on Jharigaon - Dhamnaguda Road, Arachitguda, Umerkote. Use the map below for directions, or call us and we will guide you in.`,
     ],
   },
 ];

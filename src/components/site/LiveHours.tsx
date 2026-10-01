@@ -69,3 +69,17 @@ export function HoursTable() {
     </table>
   );
 }
+
+/** Hero card: today's hours, worked out in the browser so it is right on the day it is viewed. */
+export function TodayHours() {
+  const hours = useContext(HoursContext);
+  const [today, setToday] = useState<number | null>(null);
+  useEffect(() => setToday(weekdayOf(istNow().date)), []);
+  const h = today === null ? undefined : hours.find((x) => x.weekday === today);
+  return (
+    <>
+      <p className="hero__card-label">{today === null ? "Opening hours" : `Today · ${weekdayNames[today]}`}</p>
+      <p className="hero__card-hours">{h ? hoursLabel(h) : hoursSummaryText(hours)}</p>
+    </>
+  );
+}

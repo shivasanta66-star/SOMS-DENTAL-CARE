@@ -1,46 +1,17 @@
 import { BookingWidget } from "@/components/booking/BookingWidget";
-import {
-  BracesIcon,
-  CheckupIcon,
-  ClockIcon,
-  CrownIcon,
-  ExtractionIcon,
-  HeartIcon,
-  ImplantIcon,
-  InstagramIcon,
-  MapPinIcon,
-  PhoneIcon,
-  RootCanalIcon,
-  RupeeIcon,
-  ShieldIcon,
-  SmileIcon,
-  Star,
-  UserCheckIcon,
-  WhatsAppIcon,
-} from "@/components/icons";
+import { ClockIcon, InstagramIcon, MapPinIcon, PhoneIcon, ShieldIcon, Star, WhatsAppIcon } from "@/components/icons";
 import { BookThisButton } from "@/components/site/BookThisButton";
 import { ClinicIllustration } from "@/components/site/Illustrations";
 import { PersistentActions } from "@/components/site/PersistentActions";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { clinic, whatsappLink } from "@/lib/clinic";
-import { facilityPhotos, faqs, navLinks, reviewHighlights, services, trustPoints, type ServiceIconKey } from "@/lib/content";
-import { HoursProvider, HoursSummary, HoursTable, type PublicHours } from "@/components/site/LiveHours";
+import { facilityPhotos, faqs, navLinks, reviewHighlights, services, trustPoints } from "@/lib/content";
+import { HoursProvider, HoursSummary, HoursTable, TodayHours, type PublicHours } from "@/components/site/LiveHours";
 import { getPublicHoursOrFallback } from "../../netlify/lib/hours";
 
 // Static page, built with the opening hours in Supabase at deploy time. The
 // hours sections refresh themselves from /api/hours in the browser.
 
-const serviceIcons: Record<ServiceIconKey, typeof CheckupIcon> = {
-  checkup: CheckupIcon,
-  rootCanal: RootCanalIcon,
-  braces: BracesIcon,
-  extraction: ExtractionIcon,
-  crown: CrownIcon,
-  implant: ImplantIcon,
-  smile: SmileIcon,
-};
-
-const trustIcons = { heart: HeartIcon, shield: ShieldIcon, rupee: RupeeIcon, user: UserCheckIcon };
 
 function jsonLd(hours: PublicHours) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.URL || "http://localhost:3000";
@@ -97,39 +68,38 @@ export default async function HomePage() {
         <section id="top" className="hero" aria-labelledby="hero-title">
           <div className="container grid">
             <div className="hero__inner">
-              <span className="eyebrow">Dental clinic in {clinic.locality}</span>
-              <h1 id="hero-title">{clinic.name}</h1>
+              <span className="eyebrow">Dental clinic · {clinic.address.city}</span>
+              <h1 id="hero-title">Gentle dental care, with the cost explained first.</h1>
               <p className="hero__promise">
-                <strong>{clinic.tagline}.</strong> Book a time that suits you, see the fee before you pay, and know the cost of any
-                treatment before it starts.
+                Choose a time that suits you, pay the consultation fee online, and sit down with a doctor who tells you what is
+                wrong and what each option costs before anything begins.
               </p>
               <div className="hero__actions">
                 <a href="#book" className="btn btn--primary">Book Appointment</a>
                 <a href={`tel:${clinic.phoneE164}`} className="btn btn--outline"><PhoneIcon size={18} />Call Now</a>
               </div>
-              <ul className="hero__meta">
-                <li><ClockIcon size={18} /><HoursSummary /></li>
-                <li><Star fill="full" size={16} />{clinic.googleRating.value} on Google ({clinic.googleRating.count} reviews)</li>
-                <li><MapPinIcon size={18} />{clinic.address.city}, {clinic.address.district}</li>
-              </ul>
             </div>
+            <aside className="hero__card" aria-label="Clinic at a glance">
+              <TodayHours />
+              <dl className="hero__facts">
+                <div><dt>Google rating</dt><dd><Star fill="full" size={16} /> {clinic.googleRating.value} <span>({clinic.googleRating.count} reviews)</span></dd></div>
+                <div><dt>Where</dt><dd>{clinic.address.street}, {clinic.address.city}</dd></div>
+                <div><dt>Call or WhatsApp</dt><dd>{clinic.phoneDisplay}</dd></div>
+              </dl>
+            </aside>
           </div>
         </section>
 
-        {/* 2. Trust strip */}
-        <section className="section trust" aria-label="Why patients choose us">
+        {/* 2. Trust strip: plain statements, no cards */}
+        <section className="trust" aria-label="How we work">
           <div className="container">
-            <ul className="grid trust__list">
-              {trustPoints.map((t) => {
-                const Icon = trustIcons[t.icon];
-                return (
-                  <li key={t.title} className="card trust__item reveal" suppressHydrationWarning>
-                    <span className="icon-badge"><Icon /></span>
-                    <h3>{t.title}</h3>
-                    <p>{t.text}</p>
-                  </li>
-                );
-              })}
+            <ul className="trust__list">
+              {trustPoints.map((t) => (
+                <li key={t.title}>
+                  <h2>{t.title}</h2>
+                  <p>{t.text}</p>
+                </li>
+              ))}
             </ul>
           </div>
         </section>
@@ -161,25 +131,23 @@ export default async function HomePage() {
 
         {/* 4. Services */}
         <section id="services" className="section section--mint" aria-labelledby="services-title">
-          <div className="container">
-            <div className="section-head">
-              <span className="eyebrow">Services</span>
-              <h2 id="services-title">Treatments we offer</h2>
-              <p>From a routine check-up to replacing a missing tooth. Pick a treatment to book a consultation for it.</p>
+          <div className="container grid">
+            <div className="services__head">
+              <h2 id="services-title">What we treat</h2>
+              <p>From a routine check-up to replacing a missing tooth. Choose a treatment and the booking form opens with it selected.</p>
             </div>
-            <ul className="grid services__list">
-              {services.map((s) => {
-                const Icon = serviceIcons[s.icon];
-                return (
-                  <li key={s.name} className="card service reveal" suppressHydrationWarning>
-                    <span className="icon-badge"><Icon /></span>
+            <ol className="services__list">
+              {services.map((s, i) => (
+                <li key={s.name} className="service">
+                  <span className="service__no" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+                  <div className="service__text">
                     <h3>{s.name}</h3>
                     <p>{s.description}</p>
-                    <BookThisButton service={s.name} />
-                  </li>
-                );
-              })}
-            </ul>
+                  </div>
+                  <BookThisButton service={s.name} />
+                </li>
+              ))}
+            </ol>
           </div>
         </section>
 
@@ -187,9 +155,8 @@ export default async function HomePage() {
         <section id="facility" className="section" aria-labelledby="facility-title">
           <div className="container">
             <div className="section-head">
-              <span className="eyebrow">Our facility</span>
-              <h2 id="facility-title">Clean, modern and carefully kept</h2>
-              <p>The same standard of equipment and hygiene you'd expect in a bigger town, close to home.</p>
+              <h2 id="facility-title">Where you will be treated</h2>
+              <p>Chair, sterilisation, X-ray and reception, all under one roof.</p>
             </div>
             <ul className="grid facility__photos">
               {facilityPhotos.map((p) => (
@@ -204,40 +171,36 @@ export default async function HomePage() {
             <div className="facility__note">
               <span className="icon-badge"><ShieldIcon /></span>
               <p>
-                <strong>Hygiene, every time.</strong> Instruments are cleaned and sterilised after every patient, and single-use items
-                such as gloves, masks and suction tips are fresh for each person.
+                <strong>Sterilised between every patient.</strong> Instruments are cleaned and sterilised after each patient, and gloves, masks and suction tips are
+                single-use.
               </p>
             </div>
           </div>
         </section>
 
         {/* 6. Patient reviews */}
-        <section id="reviews" className="section section--mint" aria-labelledby="reviews-title">
-          <div className="container">
-            <div className="section-head">
-              <span className="eyebrow">Patient reviews</span>
-              <h2 id="reviews-title">What our patients say</h2>
-            </div>
-            <div className="rating">
-              <span className="rating__score">{clinic.googleRating.value}</span>
-              <Stars value={clinic.googleRating.value} />
-              <span className="rating__count">
+        <section id="reviews" className="section section--deep" aria-labelledby="reviews-title">
+          <div className="container grid">
+            <div className="reviews__head">
+              <h2 id="reviews-title">What patients say</h2>
+              <div className="rating">
+                <span className="rating__score">{clinic.googleRating.value}</span>
+                <Stars value={clinic.googleRating.value} />
+              </div>
+              <p className="rating__count">
                 <span className="sr-only">{clinic.googleRating.value} out of 5 stars, </span>
                 from {clinic.googleRating.count} Google reviews
-              </span>
-            </div>
-            <p className="caption">What patients mention most often in their reviews:</p>
-            <ul className="grid reviews__list">
-              {reviewHighlights.map((r) => (
-                <li key={r.title} className="card review reveal" suppressHydrationWarning>
-                  <h3>{r.title}</h3>
-                  <p>{r.text}</p>
-                </li>
-              ))}
-            </ul>
-            <p style={{ marginTop: 24 }}>
+              </p>
               <a href={clinic.mapsUrl} target="_blank" rel="noopener noreferrer">Read all reviews on Google</a>
-            </p>
+            </div>
+            <dl className="reviews__list">
+              {reviewHighlights.map((r) => (
+                <div key={r.title}>
+                  <dt>{r.title}</dt>
+                  <dd>{r.text}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </section>
 
@@ -245,9 +208,7 @@ export default async function HomePage() {
         <section id="faq" className="section" aria-labelledby="faq-title">
           <div className="container">
             <div className="section-head">
-              <span className="eyebrow">Questions</span>
-              <h2 id="faq-title">Before your visit</h2>
-              <p>Answers to what first-time patients ask us most.</p>
+              <h2 id="faq-title">Before your first visit</h2>
             </div>
             <div className="faq">
               {faqs.map((f) => (
@@ -266,9 +227,8 @@ export default async function HomePage() {
         <section id="book" className="section section--mint" aria-labelledby="book-title">
           <div className="container booking-wrap">
             <div className="section-head">
-              <span className="eyebrow">Book appointment</span>
-              <h2 id="book-title">Choose a time that suits you</h2>
-              <p>Pick a service and an open slot, then pay the consultation fee online to confirm. It takes about two minutes.</p>
+              <h2 id="book-title">Book your appointment</h2>
+              <p>Pick a service and an open slot, then pay the consultation fee online to confirm. About two minutes.</p>
             </div>
             <BookingWidget />
           </div>
@@ -278,7 +238,6 @@ export default async function HomePage() {
         <section id="visit" className="section" aria-labelledby="visit-title">
           <div className="container">
             <div className="section-head">
-              <span className="eyebrow">Visit us</span>
               <h2 id="visit-title">Find the clinic</h2>
             </div>
             <div className="grid">

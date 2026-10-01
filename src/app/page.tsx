@@ -83,7 +83,7 @@ export default async function HomePage() {
         <section id="top" className="hero" aria-labelledby="hero-title">
           <div className="container grid">
             <div className="hero__inner">
-              <span className="eyebrow">{clinic.name} · {clinic.locality}</span>
+              <span className="eyebrow">Dental clinic · {clinic.address.city}</span>
               <h1 id="hero-title">Gentle dental care, with the cost explained first.</h1>
               <p className="hero__promise">
                 Choose a time that suits you, pay the consultation fee online, and sit down with a doctor who tells you what is

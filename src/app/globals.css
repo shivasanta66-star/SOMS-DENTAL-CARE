@@ -91,13 +91,6 @@ small, .caption { font-size: 14px; color: var(--muted); }
 
 .card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: var(--s4); }
 
-/* Fade-and-rise entrance, 300ms, once. Content stays visible without JS. */
-.js-reveal .reveal { opacity: 0; transform: translateY(16px); transition: opacity 300ms ease-out, transform 300ms ease-out; }
-.js-reveal .reveal.is-visible { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) {
-  .js-reveal .reveal { opacity: 1; transform: none; transition: none; }
-}
-
 /* ---------- Header ---------- */
 .site-header { position: sticky; top: 0; z-index: 40; background: rgba(255, 255, 255, 0.97); border-bottom: 1px solid var(--line); }
 .site-header__inner { display: flex; align-items: center; gap: var(--s3); height: var(--header-h); }
@@ -137,7 +130,7 @@ small, .caption { font-size: 14px; color: var(--muted); }
 .hero__facts dt { font-size: 13px; color: #9fc6d1; }
 .hero__facts dd { margin: 0; display: flex; align-items: center; gap: 6px; color: var(--white); }
 .hero__facts dd span { color: #9fc6d1; }
-.hero__facts .stars-inline, .hero__facts svg { color: #e0b44c; }
+.hero__facts svg { color: #e0b44c; }
 @media (min-width: 768px) {
   .hero { padding: var(--s7) 0 var(--s6); }
   .hero h1 { font-size: 52px; }
@@ -201,8 +194,6 @@ small, .caption { font-size: 14px; color: var(--muted); }
   .facility__photos li:nth-child(4) { grid-column: span 6; }
   .facility__photos li:nth-child(4) .illustration { aspect-ratio: 8 / 3; }
 }
-.facility__note { display: flex; gap: var(--s3); align-items: flex-start; margin-top: var(--s4); max-width: 760px; }
-.facility__note p { margin: 0; }
 
 /* ---------- Reviews ---------- */
 .section--deep { background: var(--deep); color: #d7e6ea; }
@@ -241,7 +232,6 @@ small, .caption { font-size: 14px; color: var(--muted); }
 /* Fieldsets default to min-width: min-content, which lets the date strip push the page sideways. */
 .fieldset { border: 0; padding: 0; margin: 0 0 var(--s4); min-width: 0; }
 .fieldset > legend { padding: 0; }
-.field__hint { font-size: 14px; color: var(--muted); margin: -4px 0 var(--s2); }
 .field__error { font-size: 14px; color: var(--error); margin: var(--s2) 0 0; }
 .input, .select {
   width: 100%; min-height: 48px; padding: 10px 14px; font: 16px/1.4 var(--font-body); color: var(--ink);
@@ -335,7 +325,6 @@ small, .caption { font-size: 14px; color: var(--muted); }
   .hero__card-hours { font-size: 24px; }
   .section { padding: var(--s5) 0; }
   .booking { padding: var(--s3); }
-  .service .btn { min-height: 44px; }
   .service .btn, .btn--small { min-height: 44px; }
   .contact-list { gap: 0; }
   .contact-list li { align-items: center; min-height: 48px; }
@@ -345,6 +334,9 @@ small, .caption { font-size: 14px; color: var(--muted); }
   .site-footer ul { gap: 0; }
   .site-footer__legal a { min-height: 0; }
   .reviews__head a { display: inline-flex; align-items: center; min-height: 44px; }
+  .brand { min-height: 44px; }
+  .emergency { display: inline-block; padding: 10px 0; }
+  .services__head p { max-width: none; }
   .visit__map iframe { height: 260px; }
   .confirm dl { grid-template-columns: 1fr; gap: 2px; }
   .confirm dd { margin-bottom: var(--s2); }
@@ -355,11 +347,6 @@ small, .caption { font-size: 14px; color: var(--muted); }
   .mobile-bar .btn { font-size: 14px; gap: 4px; }
   .mobile-bar { grid-template-columns: 1fr 1.2fr 1.2fr; }
 }
-@media (max-width: 767px) {
-  .brand { min-height: 44px; }
-  .emergency { display: inline-block; padding: 10px 0; }
-}
-@media (max-width: 767px) { .services__head p { max-width: none; } }
 
 /* ---------- Conversion helpers ---------- */
 .hero__alt { margin: var(--s3) 0 0; font-size: 15px; color: var(--muted); }

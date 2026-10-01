@@ -49,6 +49,8 @@ export const fallbackHours = weekdayNames.map((_, weekday) => ({
   isClosed: false,
 }));
 
+export const whatsappGreeting = "Hello SOMS Dental Care, I'd like to ask about an appointment.";
+
 export function whatsappLink(text?: string) {
   const base = `https://wa.me/${clinic.whatsappE164}`;
   return text ? `${base}?text=${encodeURIComponent(text)}` : base;

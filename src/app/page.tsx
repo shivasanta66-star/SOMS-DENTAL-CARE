@@ -4,7 +4,7 @@ import { BookThisButton } from "@/components/site/BookThisButton";
 import { ClinicIllustration } from "@/components/site/Illustrations";
 import { PersistentActions } from "@/components/site/PersistentActions";
 import { SiteHeader } from "@/components/site/SiteHeader";
-import { clinic, whatsappLink } from "@/lib/clinic";
+import { clinic, whatsappLink, whatsappGreeting as waText } from "@/lib/clinic";
 import { facilityPhotos, faqs, navLinks, reviewHighlights, services, trustPoints } from "@/lib/content";
 import { HoursProvider, HoursSummary, HoursTable, TodayHours, type PublicHours } from "@/components/site/LiveHours";
 import { getPublicHoursOrFallback } from "../../netlify/lib/hours";
@@ -78,13 +78,19 @@ export default async function HomePage() {
                 <a href="#book" className="btn btn--primary">Book Appointment</a>
                 <a href={`tel:${clinic.phoneE164}`} className="btn btn--outline"><PhoneIcon size={18} />Call Now</a>
               </div>
+              <p className="hero__alt">
+                Prefer to chat first?{" "}
+                <a href={whatsappLink(waText)} target="_blank" rel="noopener noreferrer">WhatsApp us</a>
+                {" · "}
+                <a href={clinic.mapsUrl} target="_blank" rel="noopener noreferrer">Get directions</a>
+              </p>
             </div>
             <aside className="hero__card" aria-label="Clinic at a glance">
               <TodayHours />
               <dl className="hero__facts">
                 <div><dt>Google rating</dt><dd><Star fill="full" size={16} /> {clinic.googleRating.value} <span>({clinic.googleRating.count} reviews)</span></dd></div>
-                <div><dt>Where</dt><dd>{clinic.address.street}, {clinic.address.city}</dd></div>
-                <div><dt>Call or WhatsApp</dt><dd>{clinic.phoneDisplay}</dd></div>
+                <div><dt>Where</dt><dd><a href={clinic.mapsUrl} target="_blank" rel="noopener noreferrer">{clinic.address.street}, {clinic.address.city}</a></dd></div>
+                <div><dt>Phone</dt><dd><a href={`tel:${clinic.phoneE164}`}>{clinic.phoneDisplay}</a></dd></div>
               </dl>
             </aside>
           </div>
@@ -151,8 +157,19 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {/* 8. Book appointment */}
+        <section id="book" className="section" aria-labelledby="book-title">
+          <div className="container booking-wrap">
+            <div className="section-head">
+              <h2 id="book-title">Book your appointment</h2>
+              <p>Pick a service and an open slot, then pay the consultation fee online to confirm. About two minutes.</p>
+            </div>
+            <BookingWidget />
+          </div>
+        </section>
+
         {/* 5. Our facility */}
-        <section id="facility" className="section" aria-labelledby="facility-title">
+        <section id="facility" className="section section--mint" aria-labelledby="facility-title">
           <div className="container">
             <div className="section-head">
               <h2 id="facility-title">Where you will be treated</h2>
@@ -223,19 +240,8 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* 8. Book appointment */}
-        <section id="book" className="section section--mint" aria-labelledby="book-title">
-          <div className="container booking-wrap">
-            <div className="section-head">
-              <h2 id="book-title">Book your appointment</h2>
-              <p>Pick a service and an open slot, then pay the consultation fee online to confirm. About two minutes.</p>
-            </div>
-            <BookingWidget />
-          </div>
-        </section>
-
         {/* 9. Map, hours, contact */}
-        <section id="visit" className="section" aria-labelledby="visit-title">
+        <section id="visit" className="section section--mint" aria-labelledby="visit-title">
           <div className="container">
             <div className="section-head">
               <h2 id="visit-title">Find the clinic</h2>
@@ -251,6 +257,11 @@ export default async function HomePage() {
                 />
               </div>
               <div className="visit__info">
+                <div className="visit__actions">
+                  <a href={clinic.mapsUrl} target="_blank" rel="noopener noreferrer" className="btn btn--primary"><MapPinIcon size={18} />Get directions</a>
+                  <a href={`tel:${clinic.phoneE164}`} className="btn btn--outline"><PhoneIcon size={18} />Call</a>
+                  <a href={whatsappLink(waText)} target="_blank" rel="noopener noreferrer" className="btn btn--whatsapp"><WhatsAppIcon size={18} />WhatsApp</a>
+                </div>
                 <h3>Opening hours (OPD)</h3>
                 <HoursTable />
 
@@ -265,7 +276,7 @@ export default async function HomePage() {
                     </span>
                   </li>
                   <li><PhoneIcon /><a href={`tel:${clinic.phoneE164}`}>{clinic.phoneDisplay}</a></li>
-                  <li><WhatsAppIcon /><a href={whatsappLink()} target="_blank" rel="noopener noreferrer">WhatsApp {clinic.phoneDisplay}</a></li>
+                  <li><WhatsAppIcon /><a href={whatsappLink(waText)} target="_blank" rel="noopener noreferrer">WhatsApp {clinic.phoneDisplay}</a></li>
                   <li><InstagramIcon /><a href={clinic.instagramUrl} target="_blank" rel="noopener noreferrer">{clinic.instagramHandle}</a></li>
                 </ul>
                 <p>
@@ -297,7 +308,7 @@ export default async function HomePage() {
               <h2>Get in touch</h2>
               <ul>
                 <li><a href={`tel:${clinic.phoneE164}`}>{clinic.phoneDisplay}</a></li>
-                <li><a href={whatsappLink()} target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+                <li><a href={whatsappLink(waText)} target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
                 <li><a href={clinic.instagramUrl} target="_blank" rel="noopener noreferrer">Instagram</a></li>
                 <li><a href={clinic.mapsUrl} target="_blank" rel="noopener noreferrer">Google Maps</a></li>
               </ul>

@@ -44,6 +44,7 @@ export function SiteHeader() {
           </ul>
         </nav>
         <div className="header-actions">
+          <a href={`tel:${clinic.phoneE164}`} className="header-phone">{clinic.phoneDisplay}</a>
           <a href="#book" className="btn btn--primary btn--small header-book" data-hidden={!pastHero} tabIndex={pastHero ? 0 : -1} aria-hidden={!pastHero}>
             Book Appointment
           </a>

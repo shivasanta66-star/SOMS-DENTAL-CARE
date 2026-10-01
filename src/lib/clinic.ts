@@ -32,8 +32,6 @@ export const clinic = {
     name: "Dr. Soumya Ranjan Sahu",
     shortName: "Dr. Soumya",
     qualification: "BDS",
-    // DUMMY - confirm year.
-    practiceSince: 2015,
   },
   // The verified Google rating. Display exactly - do not round.
   googleRating: { value: 4.5, count: 12 },

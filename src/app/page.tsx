@@ -1,5 +1,5 @@
 import { BookingWidget } from "@/components/booking/BookingWidget";
-import { ClockIcon, InstagramIcon, MapPinIcon, PhoneIcon, ShieldIcon, Star, WhatsAppIcon } from "@/components/icons";
+import { ClockIcon, InstagramIcon, MapPinIcon, PhoneIcon, Star, WhatsAppIcon } from "@/components/icons";
 import { BookThisButton } from "@/components/site/BookThisButton";
 import { ClinicIllustration } from "@/components/site/Illustrations";
 import { PersistentActions } from "@/components/site/PersistentActions";
@@ -20,7 +20,7 @@ function jsonLd(hours: PublicHours) {
     "@context": "https://schema.org",
     "@type": "MedicalClinic",
     name: clinic.name,
-    description: `${clinic.tagline}. Dental clinic serving Umerkote and surrounding villages.`,
+    description: `${clinic.tagline}. Dental clinic in Umerkote, Nabarangpur district, Odisha.`,
     url: siteUrl,
     telephone: clinic.phoneE164,
     medicalSpecialty: "Dentistry",
@@ -54,7 +54,6 @@ function Stars({ value }: { value: number }) {
 
 export default async function HomePage() {
   const hours = await getPublicHoursOrFallback();
-  const yearsNote = `In practice since ${clinic.doctor.practiceSince}`;
   const fullAddress = `${clinic.address.street}, ${clinic.address.city}, ${clinic.address.district} District, ${clinic.address.state} ${clinic.address.postalCode}`;
 
   return (
@@ -113,19 +112,18 @@ export default async function HomePage() {
         {/* 3. Meet the doctor */}
         <section id="doctor" className="section" aria-labelledby="doctor-title">
           <div className="container grid">
-            <div className="doctor__photo reveal" suppressHydrationWarning>
-              <ClinicIllustration kind="doctor" portrait label={`Illustration of ${clinic.doctor.shortName} at ${clinic.name}. A real photo will replace it.`} />
+            <div className="doctor__photo">
+              <ClinicIllustration kind="doctor" portrait label={`Illustration of ${clinic.doctor.shortName} at ${clinic.name}.`} />
             </div>
-            <div className="doctor__body reveal" suppressHydrationWarning>
+            <div className="doctor__body">
               <span className="eyebrow">Meet your doctor</span>
               <h2 id="doctor-title">{clinic.doctor.name}</h2>
               <ul className="doctor__creds">
                 <li>{clinic.doctor.qualification}</li>
-                <li>{yearsNote}</li>
               </ul>
               <p>
-                {clinic.doctor.shortName} believes a dental visit should never feel rushed or frightening. Before any treatment, you'll
-                hear what's wrong, what your options are, and what each one costs, in plain words.
+                At SOMS Dental Care, a visit starts with a conversation. Before any treatment you'll hear what's wrong, what your
+                options are, and what each one costs, in plain words.
               </p>
               <p>
                 If you're nervous, just say so. We'll go slowly, explain each step as we go, and you can ask us to pause at any time.
@@ -177,29 +175,21 @@ export default async function HomePage() {
             </div>
             <ul className="grid facility__photos">
               {facilityPhotos.map((p) => (
-                <li key={p.title} className="reveal" suppressHydrationWarning>
+                <li key={p.title}>
                   <figure style={{ margin: 0 }}>
-                    <ClinicIllustration kind={p.illustration} label={`Illustration: ${p.detail} at ${clinic.name}. A real photo will replace it.`} />
+                    <ClinicIllustration kind={p.illustration} label={`Illustration: ${p.detail} at ${clinic.name}.`} />
                     <figcaption>{p.title}</figcaption>
                   </figure>
                 </li>
               ))}
-            </ul>
-            <div className="facility__note">
-              <span className="icon-badge"><ShieldIcon /></span>
-              <p>
-                <strong>Sterilised between every patient.</strong> Instruments are cleaned and sterilised after each patient, and gloves, masks and suction tips are
-                single-use.
-              </p>
-            </div>
-          </div>
+            </ul>          </div>
         </section>
 
         {/* 6. Patient reviews */}
         <section id="reviews" className="section section--deep" aria-labelledby="reviews-title">
           <div className="container grid">
             <div className="reviews__head">
-              <h2 id="reviews-title">What patients say</h2>
+              <h2 id="reviews-title">What patients mention</h2>
               <div className="rating">
                 <span className="rating__score">{clinic.googleRating.value}</span>
                 <Stars value={clinic.googleRating.value} />

@@ -1,0 +1,45 @@
+# Netlify: static Next.js export for the site + admin panel, and Netlify
+# Functions (netlify/functions) for the backend. Environment variables used:
+#   SUPABASE_URL, SUPABASE_SECRET_KEY, RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET
+#   (optional) RAZORPAY_WEBHOOK_SECRET, NEXT_PUBLIC_SITE_URL
+
+[build]
+  command = "npm run build"
+  # Netlify's Next.js runtime reads the build config from .next and publishes
+  # the static export (out/) itself.
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# The admin panel must never be cached or indexed.
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    Cache-Control = "no-store"
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/admin"
+  [headers.values]
+    Cache-Control = "no-store"
+    X-Robots-Tag = "noindex, nofollow"
+
+# The static export writes the Open Graph image without a file extension.
+[[headers]]
+  for = "/opengraph-image"
+  [headers.values]
+    Content-Type = "image/png"

@@ -3,7 +3,10 @@
 import { addDays, fromMinutes, hhmm, istNow, toMinutes, weekdayOf } from "./time";
 
 export const SLOT_MINUTES = 30;
-export const BOOKING_WINDOW_DAYS = 14;
+/** How many days ahead patients can book (today counts as day 1). Editable in Admin → Settings. */
+export const DEFAULT_BOOKING_WINDOW_DAYS = 30;
+export const MIN_BOOKING_WINDOW_DAYS = 1;
+export const MAX_BOOKING_WINDOW_DAYS = 90;
 /** Same-day bookings must start at least this far in the future. */
 export const MIN_LEAD_MINUTES = 30;
 
@@ -26,9 +29,10 @@ export function availableSlotsForDate(
   blocked: BlockedRow[],
   booked: BookedRow[],
   now: Date = new Date(),
+  windowDays: number = DEFAULT_BOOKING_WINDOW_DAYS,
 ) {
   const today = istNow(now);
-  if (date < today.date || date > addDays(today.date, BOOKING_WINDOW_DAYS - 1)) return [];
+  if (date < today.date || date > addDays(today.date, windowDays - 1)) return [];
 
   const day = hours.find((h) => h.weekday === weekdayOf(date));
   if (!day || day.is_closed) return [];
@@ -45,7 +49,7 @@ export function availableSlotsForDate(
   });
 }
 
-export function bookingWindow(now: Date = new Date()) {
+export function bookingWindow(now: Date = new Date(), windowDays: number = DEFAULT_BOOKING_WINDOW_DAYS) {
   const start = istNow(now).date;
-  return Array.from({ length: BOOKING_WINDOW_DAYS }, (_, i) => addDays(start, i));
+  return Array.from({ length: windowDays }, (_, i) => addDays(start, i));
 }

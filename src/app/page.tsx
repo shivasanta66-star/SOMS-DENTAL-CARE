@@ -4,30 +4,17 @@ import { BookThisButton } from "@/components/site/BookThisButton";
 import { ClinicIllustration } from "@/components/site/Illustrations";
 import { PersistentActions } from "@/components/site/PersistentActions";
 import { SiteHeader } from "@/components/site/SiteHeader";
-import { clinic, weekdayNames, whatsappLink } from "@/lib/clinic";
+import { clinic, whatsappLink } from "@/lib/clinic";
 import { facilityPhotos, faqs, navLinks, reviewHighlights, services, trustPoints } from "@/lib/content";
-import { getPublicHours, type PublicHours } from "@/lib/hours";
-import { formatTime12, istNow, weekdayOf } from "@/lib/time";
+import { HoursProvider, HoursSummary, HoursTable, TodayHours, type PublicHours } from "@/components/site/LiveHours";
+import { getPublicHoursOrFallback } from "../../netlify/lib/hours";
 
-// Static page, refreshed every 5 minutes so opening hours edited in the admin
-// panel show up without a redeploy.
-export const revalidate = 300;
+// Static page, built with the opening hours in Supabase at deploy time. The
+// hours sections refresh themselves from /api/hours in the browser.
 
-// Monday first, as clinics usually list hours.
-const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
-
-function hoursLabel(h: PublicHours[number]) {
-  return h.isClosed ? "Closed" : `${formatTime12(h.opensAt)} - ${formatTime12(h.closesAt)}`;
-}
-
-function hoursSummary(hours: PublicHours) {
-  const first = hours[0];
-  const allSame = hours.every((h) => h.isClosed === first.isClosed && h.opensAt === first.opensAt && h.closesAt === first.closesAt);
-  return allSame && !first.isClosed ? `Open every day, ${hoursLabel(first)}` : "See opening hours below";
-}
 
 function jsonLd(hours: PublicHours) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.URL || "http://localhost:3000";
   const schemaDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   return {
     "@context": "https://schema.org",
@@ -66,14 +53,12 @@ function Stars({ value }: { value: number }) {
 }
 
 export default async function HomePage() {
-  const hours = await getPublicHours();
-  const today = weekdayOf(istNow().date);
-  const todayHours = hours.find((h) => h.weekday === today);
+  const hours = await getPublicHoursOrFallback();
   const yearsNote = `In practice since ${clinic.doctor.practiceSince}`;
   const fullAddress = `${clinic.address.street}, ${clinic.address.city}, ${clinic.address.district} District, ${clinic.address.state} ${clinic.address.postalCode}`;
 
   return (
-    <>
+    <HoursProvider initial={hours}>
       <a href="#main" className="skip-link">Skip to content</a>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd(hours)).replace(/</g, "\\u003c") }} />
       <SiteHeader />
@@ -95,8 +80,7 @@ export default async function HomePage() {
               </div>
             </div>
             <aside className="hero__card" aria-label="Clinic at a glance">
-              <p className="hero__card-label">Today · {weekdayNames[today]}</p>
-              <p className="hero__card-hours">{todayHours ? hoursLabel(todayHours) : "Call to confirm"}</p>
+              <TodayHours />
               <dl className="hero__facts">
                 <div><dt>Google rating</dt><dd><Star fill="full" size={16} /> {clinic.googleRating.value} <span>({clinic.googleRating.count} reviews)</span></dd></div>
                 <div><dt>Where</dt><dd>{clinic.address.street}, {clinic.address.city}</dd></div>
@@ -268,21 +252,7 @@ export default async function HomePage() {
               </div>
               <div className="visit__info">
                 <h3>Opening hours (OPD)</h3>
-                <table className="hours">
-                  <caption className="sr-only">Opening hours by day</caption>
-                  <tbody>
-                    {WEEK_ORDER.map((wd) => {
-                      const h = hours.find((x) => x.weekday === wd);
-                      if (!h) return null;
-                      return (
-                        <tr key={wd} data-today={wd === today}>
-                          <th scope="row">{weekdayNames[wd]}{wd === today && <span className="sr-only"> (today)</span>}</th>
-                          <td>{hoursLabel(h)}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                <HoursTable />
 
                 <h3>Contact</h3>
                 <ul className="contact-list">
@@ -333,11 +303,11 @@ export default async function HomePage() {
               </ul>
             </div>
           </div>
-          <p className="site-footer__legal">© {new Date().getFullYear()} {clinic.name}. {hoursSummary(hours)}.</p>
+          <p className="site-footer__legal">© {new Date().getFullYear()} {clinic.name}. <HoursSummary />.</p>
         </div>
       </footer>
 
       <PersistentActions />
-    </>
+    </HoursProvider>
   );
 }

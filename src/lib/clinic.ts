@@ -32,8 +32,6 @@ export const clinic = {
     name: "Dr. Soumya Ranjan Sahu",
     shortName: "Dr. Soumya",
     qualification: "BDS",
-    // DUMMY - confirm year.
-    practiceSince: 2015,
   },
   // The verified Google rating. Display exactly - do not round.
   googleRating: { value: 4.5, count: 12 },
@@ -48,6 +46,8 @@ export const fallbackHours = weekdayNames.map((_, weekday) => ({
   closesAt: "20:00",
   isClosed: false,
 }));
+
+export const whatsappGreeting = "Hello SOMS Dental Care, I'd like to ask about an appointment.";
 
 export function whatsappLink(text?: string) {
   const base = `https://wa.me/${clinic.whatsappE164}`;

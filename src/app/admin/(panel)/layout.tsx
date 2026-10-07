@@ -1,13 +1,32 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { ToothIcon } from "@/components/icons";
-import { requireAdmin } from "@/lib/auth";
 import { clinic } from "@/lib/clinic";
-import { logoutAction } from "../actions";
 import { AdminNav } from "../AdminNav";
+import { adminGet, adminPost } from "../api";
 
-export const dynamic = "force-dynamic";
+export default function PanelLayout({ children }: { children: React.ReactNode }) {
+  const [username, setUsername] = useState<string | null>(null);
 
-export default async function PanelLayout({ children }: { children: React.ReactNode }) {
-  const admin = await requireAdmin();
+  useEffect(() => {
+    // Redirects to /admin/login when there's no valid session.
+    adminGet<{ admin: { username: string } }>("session").then((r) => r.ok && setUsername(r.data.admin.username));
+  }, []);
+
+  async function signOut() {
+    await adminPost("logout");
+    window.location.assign("/admin/login");
+  }
+
+  if (!username) {
+    return (
+      <div className="admin">
+        <main className="admin-main container"><p className="caption" role="status">Checking your sign-in…</p></main>
+      </div>
+    );
+  }
+
   return (
     <div className="admin">
       <header className="admin-bar">
@@ -15,8 +34,8 @@ export default async function PanelLayout({ children }: { children: React.ReactN
           <span className="brand"><span className="brand__mark"><ToothIcon size={18} /></span>{clinic.name}</span>
           <AdminNav />
           <div className="admin-bar__user">
-            <span>Signed in as {admin.username}</span>
-            <form action={logoutAction}><button type="submit">Sign out</button></form>
+            <span>Signed in as {username}</span>
+            <button type="button" onClick={signOut}>Sign out</button>
           </div>
         </div>
       </header>

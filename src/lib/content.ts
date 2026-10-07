@@ -1,23 +1,21 @@
 // Marketing copy for the public site. Service names must match the `services`
 // table exactly so "Book This" can pre-select the right option in the form.
 
-export type ServiceIconKey = "checkup" | "rootCanal" | "braces" | "extraction" | "crown" | "implant" | "smile";
-
-export const services: { name: string; description: string; icon: ServiceIconKey }[] = [
-  { name: "General Checkup & Cleaning", icon: "checkup", description: "A full check of your teeth and gums, and a gentle clean to remove stains and tartar." },
-  { name: "Root Canal Treatment", icon: "rootCanal", description: "Saves an infected or badly decayed tooth, done under local anaesthetic so you stay comfortable." },
-  { name: "Braces & Orthodontics", icon: "braces", description: "Straightens crowded or gapped teeth, with a clear plan and timeline before you start." },
-  { name: "Tooth Extraction (incl. wisdom teeth)", icon: "extraction", description: "Careful removal of a tooth that can't be saved, including painful wisdom teeth." },
-  { name: "Crowns & Caps", icon: "crown", description: "Covers and protects a weak or broken tooth so you can chew normally again." },
-  { name: "Dental Implants", icon: "implant", description: "A fixed, natural-looking replacement for a missing tooth that doesn't rely on its neighbours." },
-  { name: "Cosmetic / Smile Treatments", icon: "smile", description: "Whitening, reshaping and small repairs for a smile you feel good about." },
+export const services: { name: string; description: string }[] = [
+  { name: "General Checkup & Cleaning", description: "A full check of your teeth and gums, and a gentle clean to remove stains and tartar." },
+  { name: "Root Canal Treatment", description: "Saves an infected or badly decayed tooth, done under local anaesthetic so you stay comfortable." },
+  { name: "Braces & Orthodontics", description: "Straightens crowded or gapped teeth, with a clear plan and timeline before you start." },
+  { name: "Tooth Extraction (incl. wisdom teeth)", description: "Careful removal of a tooth that can't be saved, including painful wisdom teeth." },
+  { name: "Crowns & Caps", description: "Covers and protects a weak or broken tooth so you can chew normally again." },
+  { name: "Dental Implants", description: "A fixed, natural-looking replacement for a missing tooth that doesn't rely on its neighbours." },
+  { name: "Cosmetic / Smile Treatments", description: "Whitening, reshaping and small repairs for a smile you feel good about." },
 ];
 
 export const trustPoints = [
-  { title: "Painless & Gentle Treatment", text: "We numb the area properly and go at your pace.", icon: "heart" },
-  { title: "Advanced Facility & Equipment", text: "Modern equipment and strict sterilisation for every patient.", icon: "shield" },
-  { title: "Transparent Pricing", text: "No hidden charges. You'll know the cost before we begin.", icon: "rupee" },
-  { title: "Experienced, Friendly Care", text: "A doctor who listens, explains, and answers every question.", icon: "user" },
+  { title: "Numbed before we begin", text: "Local anaesthetic first, and we stop the moment you ask." },
+  { title: "Clean instruments, every patient", text: "Instruments are sterilised after each visit; gloves and masks are single-use." },
+  { title: "Cost before treatment", text: "You hear the price of each option before you agree to one." },
+  { title: "Explained in plain words", text: "What is wrong, what it needs, and what happens if you wait." },
 ] as const;
 
 export const facilityPhotos = [
@@ -27,13 +25,13 @@ export const facilityPhotos = [
   { title: "Waiting area", detail: "Reception and waiting seats", illustration: "waiting" },
 ] as const;
 
-// Summaries of what patients mention most in the clinic's Google reviews.
-// Not quotes, and not attributed to anyone.
+// Themes from the clinic's Google reviews, in our words. Not quotes, and not
+// attributed to anyone.
 export const reviewHighlights = [
-  { title: "Painless treatment", text: "Patients often say their treatment was far gentler than they expected, even for procedures they were worried about." },
-  { title: "Advanced facility", text: "The clean, well-equipped clinic comes up again and again, with modern equipment many didn't expect to find locally." },
-  { title: "Affordable cost", text: "Reviewers mention fair, affordable charges, and knowing the cost clearly before treatment began." },
-  { title: "Friendly staff", text: "People describe a warm welcome and a doctor who takes time to explain things and put nervous patients at ease." },
+  { title: "Comfortable treatment", text: "Patients often say treatment was gentler than they expected." },
+  { title: "A clean, well-equipped clinic", text: "The facility and equipment come up again and again." },
+  { title: "Clear, fair charges", text: "Reviewers mention affordable fees and knowing the cost beforehand." },
+  { title: "Time taken to explain", text: "A warm welcome, and a doctor who puts nervous patients at ease." },
 ];
 
 export const faqs: { q: string; a: string[] }[] = [
@@ -65,9 +63,9 @@ export const faqs: { q: string; a: string[] }[] = [
     ],
   },
   {
-    q: "Is there parking?",
+    q: "How do I find the clinic?",
     a: [
-      "[Parking details to be confirmed by the clinic.] For directions, use the map below or call us and we'll guide you.",
+      `We are on Jharigaon - Dhamnaguda Road, Arachitguda, Umerkote. Use the map below for directions, or call us and we will guide you in.`,
     ],
   },
 ];

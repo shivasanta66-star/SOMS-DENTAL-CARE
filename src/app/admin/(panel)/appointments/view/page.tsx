@@ -1,34 +1,57 @@
+"use client";
+
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { getAppointment } from "@/lib/appointments";
-import { requireAdmin } from "@/lib/auth";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
+import type { Appointment } from "@/lib/appointment-types";
 import { formatDateLong, formatRupees, formatTime12, hhmm } from "@/lib/time";
-import { cancelAppointmentAction, refundAppointmentAction, setAppointmentStatusAction } from "../../../actions";
-import { Badge, Flash } from "../../../ui";
+import { submitChange, useAdminData, type FlashState } from "../../../api";
+import { Badge, Flash, Loading } from "../../../ui";
 
-export default async function AppointmentDetailPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ ok?: string; error?: string }>;
-}) {
-  await requireAdmin();
-  const { id } = await params;
-  const sp = await searchParams;
-  const a = await getAppointment(id);
-  if (!a) notFound();
+function AppointmentDetail() {
+  const id = useSearchParams().get("id") ?? "";
+  const { data, error, reload } = useAdminData<{ appointment: Appointment }>(id ? `appointments/${encodeURIComponent(id)}` : null);
+  const [flash, setFlash] = useState<FlashState>({});
+  const [busy, setBusy] = useState(false);
 
+  async function change(action: string, body: unknown = {}) {
+    setBusy(true);
+    await submitChange(`appointments/${encodeURIComponent(id)}/${action}`, body, setFlash, reload);
+    setBusy(false);
+  }
+
+  if (!id || error) {
+    return (
+      <>
+        <p><Link href="/admin/appointments">← All appointments</Link></p>
+        <Flash error={error ?? "not_found"} />
+      </>
+    );
+  }
+  if (!data) return <Loading />;
+
+  const a = data.appointment;
   const isPaid = a.payment_status === "paid";
   const canMark = a.status === "confirmed" || a.status === "completed" || a.status === "no_show";
   const canCancel = a.status === "pending_payment" || a.status === "confirmed" || a.status === "no_show";
   const rzpDashboard = a.razorpay_payment_id ? `https://dashboard.razorpay.com/app/payments/${a.razorpay_payment_id}` : null;
 
+  function onCancel(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const refund = new FormData(e.currentTarget).get("refund") === "yes";
+    const question = isPaid
+      ? refund
+        ? `Cancel this appointment and refund ${formatRupees(a.amount_paise)} to the patient through Razorpay?`
+        : "Cancel this appointment and keep the payment on record (no refund now)?"
+      : "Cancel this appointment? The time slot will open up for other patients.";
+    if (window.confirm(question)) void change("cancel", { refund });
+  }
+
   return (
     <>
       <p><Link href="/admin/appointments">← All appointments</Link></p>
       <h1>{a.patient_name}</h1>
-      <Flash ok={sp.ok} error={sp.error} />
+      <Flash ok={flash.ok} error={flash.error} />
 
       {a.status === "cancelled" && isPaid && (
         <div className="notice notice--error" role="alert">
@@ -48,7 +71,7 @@ export default async function AppointmentDetailPage({
           <dt>Patient</dt><dd>{a.patient_name}</dd>
           <dt>Phone</dt><dd><a href={`tel:+91${a.patient_phone}`}>{a.patient_phone}</a></dd>
           <dt>Status</dt><dd><Badge value={a.status} /></dd>
-          <dt>Booked</dt><dd>{a.created_at.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</dd>
+          <dt>Booked</dt><dd>{new Date(a.created_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</dd>
         </dl>
       </div>
 
@@ -63,10 +86,15 @@ export default async function AppointmentDetailPage({
           <dt>Razorpay refund</dt><dd>{a.razorpay_refund_id ?? "-"}</dd>
         </dl>
         {a.status === "cancelled" && isPaid && (
-          <form action={refundAppointmentAction} style={{ marginTop: 24 }}>
-            <input type="hidden" name="id" value={a.id} />
-            <button type="submit" className="btn btn--danger btn--small">Refund {formatRupees(a.amount_paise)} via Razorpay</button>
-          </form>
+          <button
+            type="button"
+            className="btn btn--danger btn--small"
+            style={{ marginTop: 24 }}
+            disabled={busy}
+            onClick={() => window.confirm(`Refund ${formatRupees(a.amount_paise)} to the patient through Razorpay?`) && void change("refund")}
+          >
+            Refund {formatRupees(a.amount_paise)} via Razorpay
+          </button>
         )}
       </div>
 
@@ -75,18 +103,14 @@ export default async function AppointmentDetailPage({
           <h2 style={{ marginTop: 0 }}>After the visit</h2>
           <div className="actions">
             {a.status !== "completed" && (
-              <form action={setAppointmentStatusAction} className="inline-form">
-                <input type="hidden" name="id" value={a.id} />
-                <input type="hidden" name="status" value="completed" />
-                <button type="submit" className="btn btn--primary btn--small">Mark completed</button>
-              </form>
+              <button type="button" className="btn btn--primary btn--small" disabled={busy} onClick={() => change("status", { status: "completed" })}>
+                Mark completed
+              </button>
             )}
             {a.status !== "no_show" && (
-              <form action={setAppointmentStatusAction} className="inline-form">
-                <input type="hidden" name="id" value={a.id} />
-                <input type="hidden" name="status" value="no_show" />
-                <button type="submit" className="btn btn--outline btn--small">Mark no-show</button>
-              </form>
+              <button type="button" className="btn btn--outline btn--small" disabled={busy} onClick={() => change("status", { status: "no_show" })}>
+                Mark no-show
+              </button>
             )}
           </div>
         </div>
@@ -95,8 +119,7 @@ export default async function AppointmentDetailPage({
       {canCancel && (
         <div className="admin-card">
           <h2 style={{ marginTop: 0 }}>Cancel appointment</h2>
-          <form action={cancelAppointmentAction}>
-            <input type="hidden" name="id" value={a.id} />
+          <form onSubmit={onCancel}>
             {isPaid ? (
               <>
                 <p>The patient paid {formatRupees(a.amount_paise)} online. What should happen to the payment?</p>
@@ -114,10 +137,18 @@ export default async function AppointmentDetailPage({
             ) : (
               <p>This booking hasn't been paid, so there's nothing to refund. The time slot will open up for other patients.</p>
             )}
-            <button type="submit" className="btn btn--danger btn--small">Cancel appointment</button>
+            <button type="submit" className="btn btn--danger btn--small" disabled={busy}>Cancel appointment</button>
           </form>
         </div>
       )}
     </>
+  );
+}
+
+export default function AppointmentDetailPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <AppointmentDetail />
+    </Suspense>
   );
 }

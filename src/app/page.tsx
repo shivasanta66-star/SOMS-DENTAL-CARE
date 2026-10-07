@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { BookingWidget } from "@/components/booking/BookingWidget";
 import {
   BracesIcon,
@@ -308,15 +309,15 @@ export default async function HomePage() {
               </div>
               <div className="visit__info">
                 <h3>Opening hours (OPD)</h3>
-                <table className="hours">
+                <table className="hours reveal" suppressHydrationWarning>
                   <caption className="sr-only">Opening hours by day</caption>
                   <tbody>
-                    {WEEK_ORDER.map((wd) => {
+                    {WEEK_ORDER.map((wd, i) => {
                       const h = hours.find((x) => x.weekday === wd);
                       if (!h) return null;
                       return (
-                        <tr key={wd} data-today={wd === today}>
-                          <th scope="row">{weekdayNames[wd]}{wd === today && <span className="sr-only"> (today)</span>}</th>
+                        <tr key={wd} data-today={wd === today} data-closed={h.isClosed} style={{ "--i": i } as CSSProperties}>
+                          <th scope="row"><span className="hours__dot" aria-hidden="true" />{weekdayNames[wd]}{wd === today && <span className="sr-only"> (today)</span>}</th>
                           <td>{hoursLabel(h)}</td>
                         </tr>
                       );

@@ -3,7 +3,7 @@
 // Opening hours on the public page. The static page is built with the hours
 // from Supabase at deploy time, then refreshed from /api/hours in the browser
 // so edits made in the admin panel show up without a redeploy.
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type CSSProperties } from "react";
 import { weekdayNames } from "@/lib/clinic";
 import { formatTime12, istNow, weekdayOf } from "@/lib/time";
 
@@ -51,16 +51,35 @@ export function HoursTable() {
   // "Today" depends on when the page is viewed, not when it was built.
   const [today, setToday] = useState<number | null>(null);
   useEffect(() => setToday(weekdayOf(istNow().date)), []);
+
+  // Rows slide in and dots pop the first time the table scrolls into view.
+  // Without JS, IntersectionObserver or with reduced motion it just shows.
+  const ref = useRef<HTMLTableElement>(null);
+  const [anim, setAnim] = useState<"off" | "waiting" | "in">("off");
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !("IntersectionObserver" in window) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    setAnim("waiting");
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setAnim("in");
+        io.disconnect();
+      }
+    }, { rootMargin: "0px 0px -8% 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <table className="hours">
+    <table className="hours" ref={ref} data-anim={anim}>
       <caption className="sr-only">Opening hours by day</caption>
       <tbody>
-        {WEEK_ORDER.map((wd) => {
+        {WEEK_ORDER.map((wd, i) => {
           const h = hours.find((x) => x.weekday === wd);
           if (!h) return null;
           return (
-            <tr key={wd} data-today={wd === today}>
-              <th scope="row">{weekdayNames[wd]}{wd === today && <span className="sr-only"> (today)</span>}</th>
+            <tr key={wd} data-today={wd === today} data-closed={h.isClosed} style={{ "--i": i } as CSSProperties}>
+              <th scope="row"><span className="hours__dot" aria-hidden="true" />{weekdayNames[wd]}{wd === today && <span className="sr-only"> (today)</span>}</th>
               <td>{hoursLabel(h)}</td>
             </tr>
           );

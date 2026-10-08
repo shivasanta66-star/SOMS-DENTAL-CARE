@@ -8,7 +8,7 @@ const sourceSerif = Source_Serif_4({ subsets: ["latin"], weight: ["600"], variab
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.URL || "http://localhost:3000";
 const description =
-  "Gentle, modern dental care in Umerkote, Nabarangpur. Book an appointment online, see the consultation fee up front, and pay securely by UPI or card.";
+  "Dental clinic on Jharigaon - Dhamnaguda Road, Umerkote. Check-ups, root canals, braces, extractions and implants. Book online and pay the consultation fee by UPI or card, or just call.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

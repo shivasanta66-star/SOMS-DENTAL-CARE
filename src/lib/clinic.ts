@@ -3,7 +3,7 @@
 
 export const clinic = {
   name: "SOMS Dental Care",
-  tagline: "Gentle, modern dental care in Umerkote",
+  tagline: "Dental clinic in Umerkote, Nabarangpur",
   locality: "Jharigaon - Umerkote",
   address: {
     street: "Jharigaon - Dhamnaguda Rd, Arachitguda",

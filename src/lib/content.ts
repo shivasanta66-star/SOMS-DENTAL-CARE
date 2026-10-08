@@ -4,42 +4,26 @@
 export const services: { name: string; description: string }[] = [
   { name: "General Checkup & Cleaning", description: "A full check of your teeth and gums, and a gentle clean to remove stains and tartar." },
   { name: "Root Canal Treatment", description: "Saves an infected or badly decayed tooth, done under local anaesthetic so you stay comfortable." },
-  { name: "Braces & Orthodontics", description: "Straightens crowded or gapped teeth, with a clear plan and timeline before you start." },
+  { name: "Braces & Orthodontics", description: "For crooked, crowded or gapped teeth. You get the plan and a rough timeline before you commit." },
   { name: "Tooth Extraction (incl. wisdom teeth)", description: "Careful removal of a tooth that can't be saved, including painful wisdom teeth." },
   { name: "Crowns & Caps", description: "Covers and protects a weak or broken tooth so you can chew normally again." },
   { name: "Dental Implants", description: "A fixed, natural-looking replacement for a missing tooth that doesn't rely on its neighbours." },
-  { name: "Cosmetic / Smile Treatments", description: "Whitening, reshaping and small repairs for a smile you feel good about." },
+  { name: "Cosmetic / Smile Treatments", description: "Whitening, fixing chipped edges, closing small gaps." },
 ];
-
-export const trustPoints = [
-  { title: "Numbed before we begin", text: "Local anaesthetic first, and we stop the moment you ask." },
-  { title: "Clean instruments, every patient", text: "Instruments are sterilised after each visit; gloves and masks are single-use." },
-  { title: "Cost before treatment", text: "You hear the price of each option before you agree to one." },
-  { title: "Explained in plain words", text: "What is wrong, what it needs, and what happens if you wait." },
-] as const;
 
 export const facilityPhotos = [
-  { title: "Treatment chair", detail: "The dental chair and overhead light", illustration: "chair" },
-  { title: "Sterilisation area", detail: "The autoclave and sealed instrument pouches", illustration: "sterilisation" },
-  { title: "Dental X-ray", detail: "The X-ray unit and viewer", illustration: "xray" },
+  { title: "The treatment chair", detail: "The dental chair and overhead light", illustration: "chair" },
+  { title: "Sterilisation", detail: "Instruments go through the autoclave after every patient and come out in sealed pouches", illustration: "sterilisation" },
+  { title: "X-ray", detail: "The X-ray unit, so you don't have to go elsewhere for one", illustration: "xray" },
   { title: "Waiting area", detail: "Reception and waiting seats", illustration: "waiting" },
 ] as const;
-
-// Themes from the clinic's Google reviews, in our words. Not quotes, and not
-// attributed to anyone.
-export const reviewHighlights = [
-  { title: "Comfortable treatment", text: "Patients often say treatment was gentler than they expected." },
-  { title: "A clean, well-equipped clinic", text: "The facility and equipment come up again and again." },
-  { title: "Clear, fair charges", text: "Reviewers mention affordable fees and knowing the cost beforehand." },
-  { title: "Time taken to explain", text: "A warm welcome, and a doctor who puts nervous patients at ease." },
-];
 
 export const faqs: { q: string; a: string[] }[] = [
   {
     q: "Will treatment hurt?",
     a: [
       "Most treatments are done after numbing the area with a local anaesthetic, so you should feel pressure rather than pain.",
-      "If anything feels uncomfortable, raise your hand and we'll stop straight away. You're always in control, and nothing starts until you've agreed to it.",
+      "If anything feels uncomfortable, raise your hand and we'll stop straight away. Nothing starts until you've said yes to it.",
     ],
   },
   {
@@ -65,16 +49,16 @@ export const faqs: { q: string; a: string[] }[] = [
   {
     q: "How do I find the clinic?",
     a: [
-      `We are on Jharigaon - Dhamnaguda Road, Arachitguda, Umerkote. Use the map below for directions, or call us and we will guide you in.`,
+      "We're on Jharigaon - Dhamnaguda Road in Arachitguda, Umerkote. The map below has directions. If you get lost, call us and we'll talk you in.",
     ],
   },
 ];
 
 export const navLinks = [
-  { href: "#doctor", label: "Our Doctor" },
+  { href: "#doctor", label: "Doctor" },
   { href: "#services", label: "Services" },
-  { href: "#facility", label: "Facility" },
+  { href: "#facility", label: "Clinic" },
   { href: "#reviews", label: "Reviews" },
   { href: "#faq", label: "FAQ" },
-  { href: "#visit", label: "Visit Us" },
+  { href: "#visit", label: "Find us" },
 ];

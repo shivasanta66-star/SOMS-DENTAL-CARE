@@ -184,7 +184,7 @@ small, .caption { font-size: 14px; color: var(--muted); }
 .section--deep { background: var(--deep); color: #d7e6ea; }
 .section--deep h2 { color: var(--white); }
 .section--deep a { color: var(--white); }
-.reviews { display: grid; gap: var(--s3) var(--s5); align-items: center; max-width: 900px; }
+.reviews { display: grid; gap: var(--s3) var(--s5); align-items: center; }
 .reviews p { max-width: 520px; }
 .reviews a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
 .rating { display: flex; align-items: center; gap: var(--s3); }
